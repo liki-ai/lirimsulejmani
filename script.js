@@ -12,8 +12,6 @@ function setTheme(theme) {
   );
 }
 
-// Respect saved preference (inline script in <head> already set data-theme,
-// so this just wires up the button to match)
 const savedTheme = localStorage.getItem('theme') || 'dark';
 setTheme(savedTheme);
 
@@ -23,7 +21,7 @@ themeToggle.addEventListener('click', () => {
 });
 
 /* ===================================================
-   Navigation — scroll shadow & active link
+   Navigation — Scroll Shadow & Active Link
    =================================================== */
 const header = document.getElementById('header');
 const navLinks = document.querySelectorAll('.nav__link');
@@ -36,7 +34,7 @@ function updateHeader() {
 function updateActiveLink() {
   let current = '';
   sections.forEach(section => {
-    if (window.scrollY >= section.offsetTop - 110) {
+    if (window.scrollY >= section.offsetTop - 120) {
       current = section.getAttribute('id');
     }
   });
@@ -55,53 +53,45 @@ updateHeader();
 updateActiveLink();
 
 /* ===================================================
-   Mobile menu toggle
+   Mobile Menu Toggle
    =================================================== */
 const navToggle = document.getElementById('navToggle');
 const navMenu = document.getElementById('navMenu');
 
-function openMenu() {
-  navMenu.classList.add('open');
-  navToggle.classList.add('open');
-  navToggle.setAttribute('aria-expanded', 'true');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeMenu() {
-  navMenu.classList.remove('open');
-  navToggle.classList.remove('open');
-  navToggle.setAttribute('aria-expanded', 'false');
-  document.body.style.overflow = '';
-}
-
-navToggle.addEventListener('click', () => {
-  navMenu.classList.contains('open') ? closeMenu() : openMenu();
-});
-
-navMenu.querySelectorAll('.nav__link, .btn').forEach(el => {
-  el.addEventListener('click', closeMenu);
-});
-
-document.addEventListener('click', e => {
-  if (
-    navMenu.classList.contains('open') &&
-    !navMenu.contains(e.target) &&
-    !navToggle.contains(e.target) &&
-    !themeToggle.contains(e.target)
-  ) {
-    closeMenu();
+function toggleMenu() {
+  const isOpen = navMenu.classList.contains('open');
+  if (isOpen) {
+    navMenu.classList.remove('open');
+    navToggle.classList.remove('open');
+    document.body.style.overflow = '';
+  } else {
+    navMenu.classList.add('open');
+    navToggle.classList.add('open');
+    document.body.style.overflow = 'hidden';
   }
+}
+
+navToggle.addEventListener('click', (e) => {
+  e.stopPropagation();
+  toggleMenu();
 });
 
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && navMenu.classList.contains('open')) {
-    closeMenu();
-    navToggle.focus();
+// Close menu on link click
+navLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    if (navMenu.classList.contains('open')) toggleMenu();
+  });
+});
+
+// Close menu on outside click
+document.addEventListener('click', (e) => {
+  if (navMenu.classList.contains('open') && !navMenu.contains(e.target) && !navToggle.contains(e.target)) {
+    toggleMenu();
   }
 });
 
 /* ===================================================
-   Smooth scroll for anchor links
+   Smooth Scroll
    =================================================== */
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', e => {
@@ -110,36 +100,37 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     const target = document.querySelector(targetId);
     if (!target) return;
     e.preventDefault();
-    const top = target.getBoundingClientRect().top + window.scrollY - header.offsetHeight;
+    const top = target.getBoundingClientRect().top + window.scrollY - 80;
     window.scrollTo({ top, behavior: 'smooth' });
   });
 });
 
 /* ===================================================
-   Fade-in on scroll (IntersectionObserver)
+   Fade-in & Staggered Animations
    =================================================== */
 const fadeEls = document.querySelectorAll('.fade-in');
 
-const observer = new IntersectionObserver(
-  entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        // Handle staggered children if they exist
-        const staggerItems = entry.target.querySelectorAll('.stagger-item');
-        if (staggerItems.length > 0) {
-          staggerItems.forEach((item, index) => {
-            setTimeout(() => {
-              item.classList.add('visible');
-            }, index * 100);
-          });
-        }
+const observerOptions = {
+  threshold: 0.1,
+  rootMargin: '0px 0px -50px 0px'
+};
 
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  },
-  { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
-);
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      
+      // Handle staggered children
+      const staggerItems = entry.target.querySelectorAll('.stagger-item');
+      staggerItems.forEach((item, index) => {
+        setTimeout(() => {
+          item.classList.add('visible');
+        }, index * 100);
+      });
+      
+      observer.unobserve(entry.target);
+    }
+  });
+}, observerOptions);
 
 fadeEls.forEach(el => observer.observe(el));
