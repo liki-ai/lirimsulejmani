@@ -1,4 +1,28 @@
 /* ===================================================
+   Theme Toggle
+   =================================================== */
+const themeToggle = document.getElementById('themeToggle');
+
+function setTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+  themeToggle.setAttribute(
+    'aria-label',
+    theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+  );
+}
+
+// Respect saved preference (inline script in <head> already set data-theme,
+// so this just wires up the button to match)
+const savedTheme = localStorage.getItem('theme') || 'dark';
+setTheme(savedTheme);
+
+themeToggle.addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme') || 'dark';
+  setTheme(current === 'dark' ? 'light' : 'dark');
+});
+
+/* ===================================================
    Navigation — scroll shadow & active link
    =================================================== */
 const header = document.getElementById('header');
@@ -11,14 +35,11 @@ function updateHeader() {
 
 function updateActiveLink() {
   let current = '';
-
   sections.forEach(section => {
-    const sectionTop = section.offsetTop - 100;
-    if (window.scrollY >= sectionTop) {
+    if (window.scrollY >= section.offsetTop - 110) {
       current = section.getAttribute('id');
     }
   });
-
   navLinks.forEach(link => {
     const href = link.getAttribute('href').replace('#', '');
     link.classList.toggle('active', href === current);
@@ -30,7 +51,6 @@ window.addEventListener('scroll', () => {
   updateActiveLink();
 }, { passive: true });
 
-// Run once on load
 updateHeader();
 updateActiveLink();
 
@@ -55,27 +75,24 @@ function closeMenu() {
 }
 
 navToggle.addEventListener('click', () => {
-  const isOpen = navMenu.classList.contains('open');
-  isOpen ? closeMenu() : openMenu();
+  navMenu.classList.contains('open') ? closeMenu() : openMenu();
 });
 
-// Close menu on nav link click
 navMenu.querySelectorAll('.nav__link, .btn').forEach(el => {
   el.addEventListener('click', closeMenu);
 });
 
-// Close menu on outside click
 document.addEventListener('click', e => {
   if (
     navMenu.classList.contains('open') &&
     !navMenu.contains(e.target) &&
-    !navToggle.contains(e.target)
+    !navToggle.contains(e.target) &&
+    !themeToggle.contains(e.target)
   ) {
     closeMenu();
   }
 });
 
-// Close on Escape key
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && navMenu.classList.contains('open')) {
     closeMenu();
@@ -90,15 +107,10 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', e => {
     const targetId = anchor.getAttribute('href');
     if (targetId === '#') return;
-
     const target = document.querySelector(targetId);
     if (!target) return;
-
     e.preventDefault();
-
-    const headerHeight = header.offsetHeight;
-    const top = target.getBoundingClientRect().top + window.scrollY - headerHeight;
-
+    const top = target.getBoundingClientRect().top + window.scrollY - header.offsetHeight;
     window.scrollTo({ top, behavior: 'smooth' });
   });
 });
@@ -117,7 +129,7 @@ const observer = new IntersectionObserver(
       }
     });
   },
-  { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+  { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
 );
 
 fadeEls.forEach(el => observer.observe(el));
