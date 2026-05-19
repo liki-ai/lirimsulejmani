@@ -124,12 +124,22 @@ const observer = new IntersectionObserver(
   entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
+        // Handle staggered children if they exist
+        const staggerItems = entry.target.querySelectorAll('.stagger-item');
+        if (staggerItems.length > 0) {
+          staggerItems.forEach((item, index) => {
+            setTimeout(() => {
+              item.classList.add('visible');
+            }, index * 100);
+          });
+        }
+
         entry.target.classList.add('visible');
         observer.unobserve(entry.target);
       }
     });
   },
-  { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+  { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
 );
 
 fadeEls.forEach(el => observer.observe(el));
