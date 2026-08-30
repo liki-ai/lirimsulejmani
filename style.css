@@ -627,6 +627,17 @@ img { display: block; max-width: 100%; height: auto; }
   display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem;
 }
 
+.about__skills {
+  margin-top: 2rem;
+}
+
+.about__skills strong {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
 .tech-tag {
   padding: 0.25rem 0.75rem;
   background: var(--bg-surface);
@@ -668,11 +679,50 @@ img { display: block; max-width: 100%; height: auto; }
   transform: translateY(-5px);
 }
 
+.projects__intro {
+  font-size: 1.125rem;
+  margin-top: -1.5rem;
+  margin-bottom: 3rem;
+  max-width: 640px;
+  color: var(--text-secondary);
+}
+.projects__intro a {
+  color: var(--accent);
+  font-weight: 600;
+}
+.projects__intro a:hover { text-decoration: underline; }
+
+.projects__grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
 .project-card__header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
 .project-card__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
 .project-card__category { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--accent); }
-.project-card__title { font-size: 1.5rem; margin-bottom: 1rem; }
-.project-card__desc { margin-bottom: 2rem; }
+.project-card__title { font-size: 1.5rem; margin-bottom: 0.35rem; }
+.project-card__role {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+.project-card__desc { margin-bottom: 1.25rem; }
+.project-card .timeline__tech { margin-top: 0; margin-bottom: 1.5rem; }
+.project-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.ai-work__visual {
+  grid-template-columns: repeat(2, 1fr);
+}
+.ai-work__visual .ai-badge {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
 
 .cert-card { display: flex; gap: 1.5rem; align-items: flex-start; }
 .cert-card__icon { width: 40px; height: 40px; color: var(--accent); flex-shrink: 0; }
@@ -759,7 +809,7 @@ img { display: block; max-width: 100%; height: auto; }
   .hero__headline { font-size: 4rem; }
   .hero__sub, .about__text { margin-inline: auto; }
   .hero__ctas, .about__stats { justify-content: center; }
-  .services__grid { grid-template-columns: repeat(2, 1fr); }
+  .services__grid, .projects__grid { grid-template-columns: repeat(2, 1fr); }
   .ai-work { margin-inline: 1rem; }
   .ai-work__inner { padding: 4rem 2rem; }
 }
